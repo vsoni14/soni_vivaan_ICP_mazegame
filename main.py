@@ -48,11 +48,12 @@ class Game: #initializing class Game
                 if tile == "1":
                     Wall(self, col, row)
                 if tile == "M":
-                    pass
+                    Mob(self, col, row)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == "P":
                     Player(self, col, row)
+                
     def run(self):
         self.playing = True
         while self.playing: #will always be True until user exits game where self.running will become False

@@ -79,13 +79,13 @@ class Player(Sprite): #creates class Player
             self.rect.bottom = bottom
 
     def load_images(self):
-        self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE),
-                            self.spritesheet.get_image(TILESIZE,0,TILESIZE, TILESIZE)
+        self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE), # taling the frames starting at the top left
+                            self.spritesheet.get_image(TILESIZE,0,TILESIZE, TILESIZE), # after 1 tilesize which is the length of the frame
                             ]
     def update(self):
-        self.get_keys() #waits for input from games
+        self.get_keys() # waits for input from gamer
         self.rect.center = self.pos
-        self.animate()
+        self.animate() # going and displaying the frames
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
         collide_with_walls(self, self.game.all_walls, 'x')
@@ -112,6 +112,10 @@ class Mob(Sprite):
         self.groups = game.all_sprites, game.all_mobs #gets all of the sprite images
         Sprite.__init__(self, self.groups) #initializes Sprite
         self.game = game
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
+        self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
+        self.image.set_colorkey(BLACK)
+        self.load_images()
         self.image = pg.Surface((TILESIZE, TILESIZE)) #gets character pixel size from settings.py
         self.image.fill(RED) #fills the character white
         self.rect = self.image.get_rect() #draws rectangle for character
@@ -122,8 +126,26 @@ class Mob(Sprite):
         print("player initialized")
         self.rect.x = self.x
         self.rect.y = self.y
- 
+        self.last_update = 0
+        self.current_frame = 0
+
+    def animate(self):
+        # use the time element to get now
+        now = pg.time.get_ticks()
+        if now - self.last_update > 350:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
+            bottom = self.rect.bottom
+            self.image = self.idle_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
+
+    def load_images(self):
+        self.idle_frames = [self.spritesheet.get_image(TILESIZE*2,0,TILESIZE, TILESIZE), # taling the frames starting at the top left
+                            self.spritesheet.get_image(TILESIZE*3,0,TILESIZE, TILESIZE), # after 1 tilesize which is the length of the frame
+        ]
     def update(self):
+        self.animate()
         if self.rect.x > WIDTH or self.rect.x < 0:
             print("I've broken out of my cage")
             self.speed *= -1
