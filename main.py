@@ -68,12 +68,24 @@ class Game: #initializing class Game
                 if self.playing:
                     self.playing = False
                 self.running = False
+
+    def draw_text(self, text, size, color, x, y):
+        font_name = pg.font.match_font('arial')
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
+        self.screen.blit(text_surface, text_rect)
+
+    def update(self):
+        self.all_sprites.update() #updates the position of the block based on vx and vy
+
     def draw(self):
         self.screen.fill(BGCOLOR) #tells the code which color to fill the background
         self.all_sprites.draw(self.screen) #everything will be drawn on the screen
+        self.draw_text("Frames per second: " + str(floor(1/self.dt) ), 24, WHITE, WIDTH/2, HEIGHT/4)
         pg.display.flip()
-    def update(self):
-        self.all_sprites.update() #updates the position of the block based on vx and vy
+
 if __name__ == "__main__": #checks if we are in main.py and if we are in main.py, it will initialize Game
     g = Game()
  

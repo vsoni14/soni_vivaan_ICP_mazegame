@@ -112,18 +112,17 @@ class Mob(Sprite):
         self.groups = game.all_sprites, game.all_mobs #gets all of the sprite images
         Sprite.__init__(self, self.groups) #initializes Sprite
         self.game = game
-        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png")) # finds the spritesheet
         self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
-        self.image.set_colorkey(BLACK)
-        self.load_images()
+        self.image.set_colorkey(BLACK) # the background black
+        self.load_images() # loading images
         self.image = pg.Surface((TILESIZE, TILESIZE)) #gets character pixel size from settings.py
-        self.image.fill(RED) #fills the character white
         self.rect = self.image.get_rect() #draws rectangle for character
         self.speed = 1
-        self.vx, self.vy = 500,0
+        self.vx, self.vy = 350,0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        print("player initialized")
+        print("mob initialized")
         self.rect.x = self.x
         self.rect.y = self.y
         self.last_update = 0
