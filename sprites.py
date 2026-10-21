@@ -36,6 +36,7 @@ class Player(Sprite): #creates class Player
         self.groups = game.all_sprites #gets all of the sprite images
         Sprite.__init__(self, self.groups) #initializes Sprite
         self.game = game
+        self.coins = 0
         self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
         self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
         self.image.set_colorkey(BLACK)
@@ -84,6 +85,9 @@ class Player(Sprite): #creates class Player
                             ]
     def update(self):
         self.get_keys() # waits for input from gamer
+        hits = pg.sprite.spritecollide(self, self.game.all.coins, True)
+        if hits:
+            self.coins += 1
         self.rect.center = self.pos
         self.animate() # going and displaying the frames
         self.pos += self.vel * self.game.dt
@@ -106,6 +110,27 @@ class Wall(Sprite):
         self.y = y * TILESIZE
         self.rect.x = self.x
         self.rect.y = self.y
+
+class Coin(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.all_coins
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        # self.image.fill(RED)
+        pg.draw.circle(self.image, (YELLOW), (16, 16), 16)
+        self.rect = self.image.get_rect()
+        self.image.set_colorkey(BLACK)
+        self.x = x*TILESIZE
+        self.y = y*TILESIZE
+        self.rect.x = self.x
+        self.rect.y = self.y
+        print(self.rect.x)
+        print(self.rect.y)
+        
+    def update(self):
+        pass
+
  
 class Mob(Sprite):
     def __init__(self, game, x, y): #method that initializes Sprite, only runs once
@@ -140,14 +165,15 @@ class Mob(Sprite):
             self.idle_frames = [self.spritesheet.get_image(64,0,TILESIZE, TILESIZE),
                                 self.spritesheet.get_image(96,0,TILESIZE, TILESIZE)
                                 ]
-            self.run_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE),
-                                self.spritesheet.get_image(TILESIZE,0,TILESIZE, TILESIZE)
+            self.run_frames = [self.spritesheet.get_image(64,0,TILESIZE, TILESIZE),
+                                self.spritesheet.get_image(96,0,TILESIZE, TILESIZE)
                                 ]    
     def animate(self):
             # use the time element to get now
             now = pg.time.get_ticks()
             if self.dir == "none":
                 if now - self.last_update > 350:
+                    now = pg.time.get_ticks()
                     self.last_update = now
                     self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
                     bottom = self.rect.bottom
@@ -157,6 +183,8 @@ class Mob(Sprite):
                     self.rect.bottom = bottom
             elif self.dir == "right":
                 pass
+            # uses autocomplete by creating a chase method using pos bectors and obj as a parameter
+    # using autocomplete by creating a chase method using pos vectors and obj as a parameter.
     def chase(self, obj):
         if self.pos.x < obj.pos.x:
             self.vel.x = self.speed
@@ -175,8 +203,7 @@ class Mob(Sprite):
             self.vel.y = 0
     def update(self):
         self.animate()
-        if self.game.player:
-            self.chase(self.game.player)
+        self.chase(self.game.player)
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
@@ -184,3 +211,10 @@ class Mob(Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.all_walls, 'y')
         self.rect.center = self.hit_rect.center
+
+
+
+    
+    # def load_images(self):
+    #             self.idle_frames = [self.spritesheet.get_image(TILESIZE * 4,0,TILESIZE, TILESIZE)]
+    

@@ -13,6 +13,14 @@ power button, eye tracking, camera, gyroscoping, electrostatic, location, volume
 Process: cursor position, position of player, score, enemy position, velocity, aim in FPS,
  
 Output: graphics - things are drawn, sound - jump, power up, wakling, haptics
+
+GOALS:
+
+RULES:
+
+FEEDBACK:
+
+FREEDOM:
 '''
  
 import pygame as pg #importing as pg to make typing pygame easier
@@ -37,11 +45,14 @@ class Game: #initializing class Game
         self.img_dir = path.join(self.game_dir, 'images')
         self.snd_dir = path.join(self.game_dir, 'audio')
         self.map = Map(path.join(self.game_dir, map))
+        
     def new(self):
         self.load_data('level1.txt')
+        print(self.map.data)
         self.all_sprites = pg.sprite.Group()
         self.all_walls = pg.sprite.Group()
         self.all_mobs = pg.sprite.Group()
+        self.all_coins = pg.sprite.Group()
  
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -49,6 +60,8 @@ class Game: #initializing class Game
                     Wall(self, col, row)
                 if tile == "M":
                     Mob(self, col, row)
+                if tile == "C":
+                    Coin(self, col, row)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == "P":
@@ -81,9 +94,12 @@ class Game: #initializing class Game
         self.all_sprites.update() #updates the position of the block based on vx and vy
 
     def draw(self):
+        # this order matters: the first things are on the bottom are the first to be drawn
         self.screen.fill(BGCOLOR) #tells the code which color to fill the background
         self.all_sprites.draw(self.screen) #everything will be drawn on the screen
         self.draw_text("Frames per second: " + str(floor(1/self.dt) ), 24, WHITE, WIDTH/2, HEIGHT/4)
+        self.draw_text(f"Frames per second:{1/self.dt}", 24, WHITE, WIDTH/2, HEIGHT/4)
+        self.draw_text(f"Coins:{self.player.coins}", 24, WHITE, WIDTH/2, HEIGHT/7)
         pg.display.flip()
 
 if __name__ == "__main__": #checks if we are in main.py and if we are in main.py, it will initialize Game
