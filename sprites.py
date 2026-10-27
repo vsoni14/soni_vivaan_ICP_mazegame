@@ -3,7 +3,8 @@ from settings import * #imports everything from settings.py
 from pygame.sprite import Sprite #imports Sprite class
 from os import path #imports path to let us use our system's directory system
 from utils import *
- 
+from random import randint
+
 vec = pg.math.Vector2
  
 def collide_hit_rect(one, two):
@@ -15,6 +16,7 @@ def collide_with_walls(sprite, group, dir):
         #checking to see if we've collided with hitrects
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if hits:
+            # this line checks to se if we're to the left of the wall
             if hits[0].rect.centerx > sprite.hit_rect.centerx: #checks if we're to the left of the wall/object
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2 #reposition the player (sprite) to left side of wall/object
             if hits[0].rect.centerx < sprite.hit_rect.centerx: #checks if we're to the right of the wall/object
@@ -50,9 +52,14 @@ class Player(Sprite): #creates class Player
         # animation stuff
         self.last_update = 0
         self.current_frame = 0
+        self.dir = "none"
+        self.coins = 0
+        print('player instantiated')
+        print(self.pos)
 
     def get_keys(self):
         self.vel = vec(0,0)
+        self.dir = "none"
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]: #checks if left arrow or "a" key is pressed
             self.vel.x = -PLAYER_SPEED #makes player_speed negative on the x axis
@@ -68,28 +75,39 @@ class Player(Sprite): #creates class Player
             #self.vy = PLAYER_SPEED #makes player_speed positive on y_axis
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
+
     def animate(self):
         # use the time element to get now
         now = pg.time.get_ticks()
-        if now - self.last_update > 350:
-            self.last_update = now
-            self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
-            bottom = self.rect.bottom
-            self.image = self.idle_frames[self.current_frame]
-            self.rect = self.image.get_rect()
-            self.rect.bottom = bottom
+        if self.dir == "none":
+            if now - self.last_update > 350:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
+                bottom = self.rect.bottom
+                self.image = self.idle_frames[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+        elif self.dir == "right":
+            pass
 
     def load_images(self):
         self.idle_frames = [self.spritesheet.get_image(0,0,TILESIZE, TILESIZE), # taling the frames starting at the top left
                             self.spritesheet.get_image(TILESIZE,0,TILESIZE, TILESIZE), # after 1 tilesize which is the length of the frame
                             ]
+        self.run_frames = [self.spritesheet.get_image(0, 0, TILESIZE, TILESIZE),
+                           self.spritesheet.get_image(TILESIZE, 0, TILESIZE, TILESIZE)]
+        
     def update(self):
         self.get_keys() # waits for input from gamer
-        hits = pg.sprite.spritecollide(self, self.game.all.coins, True)
+        hits = pg.sprite.spritecollide(self, self.game.all_coins, True)
         if hits:
+            for i in range(3):
+                Particle(self.game, hits[0].pos.x, hits[0].pos.y)
             self.coins += 1
-        self.rect.center = self.pos
+            self.game.pickup_snd.play()
+            self.game.score += 1
         self.animate() # going and displaying the frames
+        self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
         collide_with_walls(self, self.game.all_walls, 'x')
@@ -97,7 +115,6 @@ class Player(Sprite): #creates class Player
         collide_with_walls(self, self.game.all_walls, 'y')
         self.rect.center = self.hit_rect.center
  
-       
 class Wall(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.all_walls
@@ -106,6 +123,7 @@ class Wall(Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
+        self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.rect.x = self.x
@@ -116,21 +134,44 @@ class Coin(Sprite):
         self.groups = game.all_sprites, game.all_coins
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png"))
+        self.load_images()
+        # self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image = self.spritesheet.get_image(0,0,TILESIZE, TILESIZE)
         # self.image.fill(RED)
-        pg.draw.circle(self.image, (YELLOW), (16, 16), 16)
+        # pg.draw.circle(self.image, (YELLOW), (16, 16), 16)
         self.rect = self.image.get_rect()
         self.image.set_colorkey(BLACK)
-        self.x = x*TILESIZE
-        self.y = y*TILESIZE
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.pos = vec(x*TILESIZE,y*TILESIZE)
+        # self.x = x*TILESIZE
+        # self.y = y*TILESIZE
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+        self.last_update = 0
+        self.current_frame = 0
+        # print("wall initialized")
         print(self.rect.x)
         print(self.rect.y)
-        
-    def update(self):
-        pass
+    def load_images(self):
+                self.idle_frames = [self.spritesheet.get_image(TILESIZE * 4,0,TILESIZE, TILESIZE),
+                                    self.spritesheet.get_image(TILESIZE * 5,0,TILESIZE, TILESIZE)
+                                    ]
+    def animate(self):
+            # use the time element to get now
+            now = pg.time.get_ticks()
+            if now - self.last_update > 350:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
+                bottom = self.rect.bottom
+                self.image = self.idle_frames[self.current_frame]
+                self.image.set_colorkey(BLACK)
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
 
+    def update(self):
+        self.animate()
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
  
 class Mob(Sprite):
     def __init__(self, game, x, y): #method that initializes Sprite, only runs once
@@ -155,10 +196,6 @@ class Mob(Sprite):
         self.current_frame = 0
         self.hit_rect = MOB_HIT_RECT
         print("mob initialized")
-        self.rect.x = self.x
-        self.rect.y = self.y
-        self.last_update = 0
-        self.current_frame = 0
         
 
     def load_images(self):
@@ -169,20 +206,15 @@ class Mob(Sprite):
                                 self.spritesheet.get_image(96,0,TILESIZE, TILESIZE)
                                 ]    
     def animate(self):
-            # use the time element to get now
             now = pg.time.get_ticks()
-            if self.dir == "none":
-                if now - self.last_update > 350:
-                    now = pg.time.get_ticks()
-                    self.last_update = now
-                    self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
-                    bottom = self.rect.bottom
-                    self.image = self.idle_frames[self.current_frame]
-                    self.image.set_colorkey(BLACK)
-                    self.rect = self.image.get_rect()
-                    self.rect.bottom = bottom
-            elif self.dir == "right":
-                pass
+            if now - self.last_update > 350:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.idle_frames)
+                bottom = self.rect.bottom
+                self.image = self.idle_frames[self.current_frame]
+                self.image.set_colorkey(BLACK)
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom    
             # uses autocomplete by creating a chase method using pos bectors and obj as a parameter
     # using autocomplete by creating a chase method using pos vectors and obj as a parameter.
     def chase(self, obj):
@@ -201,6 +233,7 @@ class Mob(Sprite):
             self.vel.y = -self.speed
         else:
             self.vel.y = 0
+            
     def update(self):
         self.animate()
         self.chase(self.game.player)
@@ -212,6 +245,28 @@ class Mob(Sprite):
         collide_with_walls(self, self.game.all_walls, 'y')
         self.rect.center = self.hit_rect.center
 
+class Particle(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.all_particles
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE/8, TILESIZE/8))
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.vel = vec(randint(-180, 180), randint(-180, 180)) 
+        self.pos = vec(x, y)
+        self.speed = randint(-3,3)
+        self.countdown = Cooldown()
+        self.countdown.event_time = floor(pg.time.get_ticks()/1000)
+
+    def update(self):
+        self.countdown.ticking()
+
+        self.pos += self.vel * self.speed * self.game.dt
+
+        if self.countdown.delta > 1:
+            # self.kill() # deletes particle
+            print('im dead')
 
 
     
