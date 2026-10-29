@@ -20,11 +20,12 @@ BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 
 #player settings
-PLAYER_SPEED = 300
+PLAYER_SPEED = 5
 PLAYER_HIT_RECT = pg.Rect(0, 0, TILESIZE - 5, TILESIZE - 5) 
 # - 5 is allowing hiting but not hurting
 
 PLAYER_HIT_RECT = pg.Rect(0,0, TILESIZE-5, TILESIZE-5)
+PLAYER_FRIC = -0.1
 
 # mob settings
 MOB_HIT_RECT = pg.Rect(0,0, TILESIZE-5, TILESIZE-5)

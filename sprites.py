@@ -48,33 +48,42 @@ class Player(Sprite): #creates class Player
         self.rect = self.image.get_rect() #draws rectangle for character
         self.hit_rect = PLAYER_HIT_RECT
         self.vel = vec(0,0)
+        self.acc = vec(0,0)
         self.pos = vec(x*TILESIZE,y*TILESIZE)
         # animation stuff
         self.last_update = 0
         self.current_frame = 0
         self.dir = "none"
         self.coins = 0
+        self.jumping = False
         print('player instantiated')
         print(self.pos)
 
     def get_keys(self):
-        self.vel = vec(0,0)
         self.dir = "none"
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]: #checks if left arrow or "a" key is pressed
-            self.vel.x = -PLAYER_SPEED #makes player_speed negative on the x axis
+            # self.vel.x = -PLAYER_SPEED #makes player_speed negative on the x axis
+            self.acc.x = -PLAYER_SPEED #makes player_speed negative on the x axis
             #self.vx = -PLAYER_SPEED #makes player_speed negative on the x axis
         if keys[pg.K_RIGHT] or keys[pg.K_d]: #checks if right arrow or "d" key is pressed
-            self.vel.x = PLAYER_SPEED #makes player_speed positive on x_axis
+            # self.vel.x = PLAYER_SPEED #makes player_speed positive on x_axis
+            self.acc.x = PLAYER_SPEED #makes player_speed positive on x_axis
             #self.vx = PLAYER_SPEED #makes player_speed positive on x_axis
         if keys[pg.K_UP] or keys[pg.K_w]: #checks if up arrow or "w" key is pressed
-            self.vel.y = -PLAYER_SPEED #makes player_speed negative on y_axis since top left is (0,0)
+            # self.vel.y = -PLAYER_SPEED #makes player_speed negative on y_axis since top left is (0,0)
+            self.acc.y = -PLAYER_SPEED #makes player_speed negative on y_axis since top left is (0,0)
             #self.vy = -PLAYER_SPEED #makes player_speed negative on y_axis since top left is (0,0)
         if keys[pg.K_DOWN] or keys[pg.K_s]: #checks if down arrow or "s" key is pressed
-            self.vel.y = PLAYER_SPEED #makes player_speed positive on y_axis
+            # self.vel.y = PLAYER_SPEED #makes player_speed positive on y_axis
+            self.acc.y = PLAYER_SPEED #makes player_speed positive on y_axis
             #self.vy = PLAYER_SPEED #makes player_speed positive on y_axis
-        if self.vel.x != 0 and self.vel.y != 0:
-            self.vel *= 0.7071
+
+        # if self.vel.x != 0 and self.vel.y != 0:
+        #     self.vel *= 0.7071
+
+    def jump(self):
+        pass
 
     def animate(self):
         # use the time element to get now
@@ -98,16 +107,22 @@ class Player(Sprite): #creates class Player
                            self.spritesheet.get_image(TILESIZE, 0, TILESIZE, TILESIZE)]
         
     def update(self):
+        self.acc = vec(0, 0) # stop accelerating unless we start acccellerating as well as 9.8 gravity
         self.get_keys() # waits for input from gamer
+        self.acc.x += self.vel.x * PLAYER_FRIC
+        self.acc.y += self.vel.y * PLAYER_FRIC
+        self.vel += self.acc
+        self.pos += self.vel + 0.5 * self.acc
         hits = pg.sprite.spritecollide(self, self.game.all_coins, True)
         if hits:
-            for i in range(3):
+            for i in range(1000):
                 Particle(self.game, hits[0].pos.x, hits[0].pos.y)
             self.coins += 1
             self.game.pickup_snd.play()
             self.game.score += 1
         self.animate() # going and displaying the frames
         self.rect.center = self.pos
+        
         self.pos += self.vel * self.game.dt
         self.hit_rect.centerx = self.pos.x
         collide_with_walls(self, self.game.all_walls, 'x')
@@ -251,23 +266,22 @@ class Particle(Sprite):
         Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE/8, TILESIZE/8))
-        self.image.fill(WHITE)
+        self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
-        self.vel = vec(randint(-180, 180), randint(-180, 180)) 
+        self.vel = vec(randint(-180, 180), randint(-180, 180))
         self.pos = vec(x, y)
-        self.speed = randint(-3,3)
-        self.countdown = Cooldown()
-        self.countdown.event_time = floor(pg.time.get_ticks()/1000)
+        self.speed = 5
+        # Track spawn time in milliseconds using pygame ticks directly
+        self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        self.countdown.ticking()
+        # Check if 1000 milliseconds (which is ticks have) passed --> then it kills the particle
+        if pg.time.get_ticks() - self.spawn_time > 1000:
+            self.kill()
 
         self.pos += self.vel * self.speed * self.game.dt
-
-        if self.countdown.delta > 1:
-            # self.kill() # deletes particle
-            print('im dead')
-
+        # Use center for vector-to-rect assignment to avoid float errors
+        self.rect.center = self.pos
 
     
     # def load_images(self):

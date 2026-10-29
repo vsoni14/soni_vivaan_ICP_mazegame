@@ -120,14 +120,16 @@ class Game: #initializing class Game
 
     def update(self):
         self.all_sprites.update() #updates the position of the block based on vx and vy
+        self.all_particles.update()
 
     def draw(self):
         # this order matters: the first things are on the bottom are the first to be drawn
         self.screen.fill(BGCOLOR) #tells the code which color to fill the background
         self.all_sprites.draw(self.screen) #everything will be drawn on the screen
+        self.all_particles.draw(self.screen)
         self.draw_text("Frames per second: " + str(floor(1/self.dt) ), 24, WHITE, WIDTH/2, HEIGHT/4)
-        self.draw_text(f"Frames per second:{1/self.dt}", 24, WHITE, WIDTH/2, HEIGHT/4)
         self.draw_text(f"Coins:{self.player.coins}", 24, WHITE, WIDTH/2, HEIGHT/7)
+        self.draw_text(f"High Score:{self.high_score}", 24, WHITE, WIDTH/2, HEIGHT/12)
         pg.display.flip()
 
 if __name__ == "__main__": #checks if we are in main.py and if we are in main.py, it will initialize Game
