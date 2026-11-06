@@ -14,13 +14,14 @@ Process: cursor position, position of player, score, enemy position, velocity, a
  
 Output: graphics - things are drawn, sound - jump, power up, wakling, haptics
 
-GOALS:
+GOALS: Win the race 
 
-RULES:
+RULES: Cannot go out of the track 
 
-FEEDBACK:
+FEEDBACK: 
 
-FREEDOM:
+FREEDOM: Push opponents outside the racetrack to eliminate them. 
+Pickup differnt powerups aiding your ability to stun or eliminate opponents
 '''
  
 import pygame as pg #importing as pg to make typing pygame easier
@@ -120,7 +121,7 @@ class Game: #initializing class Game
 
     def update(self):
         self.all_sprites.update() #updates the position of the block based on vx and vy
-        self.all_particles.update()
+        self.all_particles.update() # updates the particles and makes sure the particles are generated
 
     def draw(self):
         # this order matters: the first things are on the bottom are the first to be drawn

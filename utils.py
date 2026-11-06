@@ -25,16 +25,22 @@ class Spritesheet:
         image = new_image
         return image
 
-class Cooldown:
+# class Cooldown:
+#     def __init__(self):
+#         self.event_time = 0
+#         self.current_time = 0
+#         self.delta = 0
+#         print("im particling")
+
+#     def ticking(self):
+#         self.current_time = floor((pg.time.get_ticks())/1000)
+#         self.delta = self.current_time - self.event_time # change in time
+
+#     def start(self):
+#         self.start_time = pg.time.get_ticks()
+class Timer:
     def __init__(self):
-        self.event_time = 0
-        self.current_time = 0
-        self.delta = 0
-        print("im particling")
-
-    def ticking(self):
-        self.current_time = floor((pg.time.get_ticks())/1000)
-        self.delta = self.current_time - self.event_time # change in time
-
-    def start(self):
-        self.start_time = pg.time.get_ticks()
+        self.event_time = floor((pg.time.get_ticks())/1000)
+    def get_delta(self):
+        # returns difference in time in seconds from time of instantiation to now
+        return floor((pg.time.get_ticks())/1000) - self.event_time

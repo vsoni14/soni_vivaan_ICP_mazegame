@@ -1,31 +1,48 @@
 import pygame as pg
-
 WIDTH = 1024
 HEIGHT = 768
+TITLE = "My game"
 TILESIZE = 32
-TITLE = "Best game evah!!!"
 FPS = 30
 
-#Colors in rgb format
-BGCOLOR = (0, 0, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 165, 0)
-YELLOW = (255, 255, 0)
-GREEN = (50, 255, 50)
-BLUE = (0, 0, 255)
-PURPLE = (128, 0, 128)
-PINK = (255, 192, 203)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (128, 128, 128)
+# colors
+BGCOLOR = (255,100,100)
+WHITE = (255,255,255)
+GREEN = (0,255,0)
+RED = (255,0,0)
+WHITE   = (255, 255, 255)
+NEARLY_BLACK   = (1, 1, 1)
+BLACK   = (0, 0, 0)
+GRAY    = (128, 128, 128)
+SILVER  = (192, 192, 192)
+RED     = (255, 0, 0)
+MAROON  = (128, 0, 0)
+ORANGE  = (255, 165, 0)
+YELLOW  = (255, 255, 0)
+GOLD    = (255, 215, 0)
+OLIVE   = (128, 128, 0)
+LIME    = (50, 205, 50)
+GREEN   = (0, 255, 0)
+DARK_GREEN = (0, 100, 0)
+TEAL    = (0, 128, 128)
+CYAN    = (0, 255, 255)
+SKY_BLUE = (135, 206, 235)
+BLUE    = (0, 0, 255)
+NAVY    = (0, 0, 128)
+PURPLE  = (128, 0, 128)
+VIOLET  = (238, 130, 238)
+MAGENTA = (255, 0, 255)
+PINK    = (255, 192, 203)
+BROWN   = (139, 69, 19)
+BEIGE   = (245, 245, 220)
 
-#player settings
-PLAYER_SPEED = 5
-PLAYER_HIT_RECT = pg.Rect(0, 0, TILESIZE - 5, TILESIZE - 5) 
-# - 5 is allowing hiting but not hurting
-
+# player settings
+PLAYER_SPEED = 30
+PLAYER_ACC = 2
+PLAYER_GRAV = 4
+PLAYER_FRIC = -0.12
 PLAYER_HIT_RECT = pg.Rect(0,0, TILESIZE-5, TILESIZE-5)
-PLAYER_FRIC = -0.1
+PLAYER_JUMP = 50
 
 # mob settings
 MOB_HIT_RECT = pg.Rect(0,0, TILESIZE-5, TILESIZE-5)
