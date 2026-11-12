@@ -45,12 +45,13 @@ class Game: #initializing class Game
         
     def load_data(self, map):
         self.game_dir = path.dirname(__file__)
-        self.game_save_file = path.join(self.game_dir, "highscore.txt")
+        self.game_save_file = path.join(self.game_dir, "highscore.txt") # assigns the salve file to the fire "highscore.txt"
 
         self.img_dir = path.join(self.game_dir, 'images')
+ 
         # sound handling
         self.snd_dir = path.join(self.game_dir, 'audio')
-        self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "coin.mp3"))
+        self.pickup_snd = pg.mixer.Sound(path.join(self.snd_dir, "coin.mp3")) # gets the file from the audio folder
         self.map = Map(path.join(self.game_dir, map))
 
         try:

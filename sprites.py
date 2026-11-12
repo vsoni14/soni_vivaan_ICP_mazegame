@@ -139,7 +139,7 @@ class Player(Sprite): #creates class Player
         # self.pos += self.vel * self.game.dt
         hits = pg.sprite.spritecollide(self, self.game.all_coins, True)
         if hits:
-            for i in range(25):
+            for i in range(10000):
                 p = Particle(self.game, hits[0].pos.x, hits[0].pos.y)
             self.coins += 1
             self.game.pickup_snd.play()
