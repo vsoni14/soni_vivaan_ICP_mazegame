@@ -29,7 +29,8 @@ from os import path
 from settings import * #imports everything from settings.py
 from sprites import * #imports everything from sprites.py
 from utils import *
- 
+import math
+
 class Game: #initializing class Game
     def __init__(self):
         pg.init() #initializing pygame
@@ -42,7 +43,74 @@ class Game: #initializing class Game
         self.clock = pg.time.Clock()
         self.high_score = 0
         self.score = 0
-        
+
+    def show_start_screen(self):
+
+        # Create the PLAY button in the center of the screen
+        button = pg.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
+
+        # Keep displaying the start screen until the player starts the game
+        while self.running:
+
+            # Limit the screen refresh rate
+            self.clock.tick(FPS)
+
+            # Get the current position of the mouse
+            mouse = pg.mouse.get_pos()
+
+            # Check if the mouse is hovering over the PLAY button
+            hovering = button.collidepoint(mouse)
+
+            # Check for player input and window events
+            for event in pg.event.get():
+
+                # Close the game if the player clicks the X button
+                if event.type == pg.QUIT:
+                    self.running = False
+                    return False
+
+                # Check if the player clicks the left mouse button
+                if event.type == pg.MOUSEBUTTONDOWN:
+
+                    # Start the game if the PLAY button is clicked
+                    if event.button == 1 and button.collidepoint(event.pos):
+                        return True
+
+            # Fill the screen with a black background
+            self.screen.fill((0, 0, 0))
+
+            # Create the font used for the PLAY button
+            font = pg.font.SysFont("arial", 30, bold=True)
+
+            # Change the button color when the mouse hovers over it
+            if hovering:
+                button_color = (70, 130, 200)
+            else:
+                button_color = (30, 80, 140)
+
+            # Draw the PLAY button with rounded corners
+            pg.draw.rect(
+                self.screen,
+                button_color,
+                button,
+                border_radius=10
+            )
+
+            # Create the PLAY text
+            play_text = font.render("PLAY", True, (255, 255, 255))
+
+            # Position the PLAY text in the center of the button
+            self.screen.blit(
+                play_text,
+                play_text.get_rect(center=button.center)
+            )
+
+            # Update the display to show the button
+            pg.display.flip()
+
+        return False
+
+
     def load_data(self, map):
         self.game_dir = path.dirname(__file__)
         self.game_save_file = path.join(self.game_dir, "highscore.txt") # assigns the salve file to the fire "highscore.txt"
@@ -136,7 +204,8 @@ class Game: #initializing class Game
 
 if __name__ == "__main__": #checks if we are in main.py and if we are in main.py, it will initialize Game
     g = Game()
- 
-while g.running: #keeps the window open forever
-    g.new()
-    g.run()
+
+    if g.show_start_screen(): # 
+        while g.running: #keeps the window open forever
+            g.new()
+            g.run()

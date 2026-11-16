@@ -1,7 +1,7 @@
 import pygame as pg
 WIDTH = 1024
 HEIGHT = 768
-TITLE = "My game"
+TITLE = "Shadow Runner"
 TILESIZE = 32
 FPS = 30
 
