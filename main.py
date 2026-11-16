@@ -44,6 +44,102 @@ class Game: #initializing class Game
         self.high_score = 0
         self.score = 0
 
+    def draw_light_rays(self, t):
+        pass
+
+
+    def draw_glowing_orb(self, t):
+
+        # Set the position of the glowing orb
+        center = (WIDTH // 2, HEIGHT // 2 - 100)
+
+        # Calculate the pulsing size using the sine function
+        pulse = int(5 * math.sin(t * 3))
+
+        # Draw the largest outer glow circle
+        pg.draw.circle(self.screen, (10, 25, 60), center, 90 + pulse)
+
+        # Draw the middle glow circle
+        pg.draw.circle(self.screen, (15, 50, 100), center, 65 + pulse)
+
+        # Draw the smaller inner glow circle
+        pg.draw.circle(self.screen, (25, 100, 180), center, 35 + pulse)
+
+        # Draw the bright center of the glowing orb
+        pg.draw.circle(self.screen, (120, 210, 255), center, 13)
+
+
+    def draw_game_title(self):
+
+        # Create the font for the main game title
+        title_font = pg.font.SysFont("arial", 65, bold=True)
+
+        # Create the font for the subtitle and instructions
+        subtitle_font = pg.font.SysFont("arial", 18)
+
+        # Render the main game title
+        title = title_font.render(
+            "SHADOW RUNNER",
+            True,
+            (225, 240, 255)
+        )
+
+        # Position the title at the top center of the screen
+        self.screen.blit(
+            title,
+            title.get_rect(center=(WIDTH // 2, 90))
+        )
+
+        # Render the subtitle
+        subtitle = subtitle_font.render(
+            "FIND THE LIGHT. ESCAPE THE DARKNESS.",
+            True,
+            (110, 180, 220)
+        )
+
+        # Position the subtitle underneath the title
+        self.screen.blit(
+            subtitle,
+            subtitle.get_rect(center=(WIDTH // 2, 140))
+        )
+
+        # Render the instructions at the bottom of the screen
+        footer = subtitle_font.render(
+            "COLLECT LIGHT ORBS  |  REACH THE EXIT",
+            True,
+            (90, 105, 135)
+        )
+
+        # Position the instructions near the bottom
+        self.screen.blit(
+            footer,
+            footer.get_rect(center=(WIDTH // 2, HEIGHT - 45))
+        )
+
+
+
+    def draw_background(self):
+
+        # Fill the screen with a dark background
+        self.screen.fill((5, 7, 18))
+
+        # Store the positions of decorative stars
+        stars = [
+            (100, 100), (250, 180), (400, 80),
+            (600, 150), (750, 90), (900, 200),
+            (150, 350), (350, 450), (700, 400),
+            (850, 500), (500, 300), (950, 100)
+        ]
+
+        # Draw each star as a small blue circle
+        for x, y in stars:
+            pg.draw.circle(
+                self.screen,
+                (100, 140, 190),
+                (x, y),
+                2
+            )
+
     def show_start_screen(self):
 
         # Create the PLAY button in the center of the screen
@@ -77,7 +173,17 @@ class Game: #initializing class Game
                         return True
 
             # Fill the screen with a black background
-            self.screen.fill((0, 0, 0))
+            # Get the current time for the animated effects
+            t = pg.time.get_ticks() / 1000
+
+            # Draw the dark background and stars
+            self.draw_background()
+
+            # Draw the pulsing glowing orb
+            self.draw_glowing_orb(t)
+
+            # Draw the game title and instructions
+            self.draw_game_title()
 
             # Create the font used for the PLAY button
             font = pg.font.SysFont("arial", 30, bold=True)
