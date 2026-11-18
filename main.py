@@ -45,7 +45,36 @@ class Game: #initializing class Game
         self.score = 0
 
     def draw_light_rays(self, t):
-        pass
+# Set the center point where all the light rays begin
+        center = (WIDTH // 2, HEIGHT // 2 - 100)
+
+
+        # Create 36 individual light rays
+        for i in range(36):
+
+
+            # Calculate the angle of each ray
+            # The time value makes the rays rotate slowly
+            angle = (i / 36) * math.pi * 2 + t * 0.12
+
+
+            # Calculate the ending x position of each ray
+            end_x = center[0] + math.cos(angle) * 400
+
+
+            # Calculate the ending y position of each ray
+            end_y = center[1] + math.sin(angle) * 300
+
+
+            # Draw the ray from the center to its endpoint
+            pg.draw.line(
+                self.screen,
+                (15, 30, 55),
+                center,
+                (int(end_x), int(end_y)),
+                1
+            )
+
 
 
     def draw_glowing_orb(self, t):
@@ -179,11 +208,15 @@ class Game: #initializing class Game
             # Draw the dark background and stars
             self.draw_background()
 
+            # Draw the rotating light rays
+            self.draw_light_rays(t)
+
             # Draw the pulsing glowing orb
             self.draw_glowing_orb(t)
 
             # Draw the game title and instructions
             self.draw_game_title()
+
 
             # Create the font used for the PLAY button
             font = pg.font.SysFont("arial", 30, bold=True)
