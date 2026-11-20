@@ -318,6 +318,9 @@ class Game: #initializing class Game
                 if self.playing:
                     self.playing = False
                 self.running = False
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_w:
+                    self.player.jump()
 
     def draw_text(self, text, size, color, x, y):
         font_name = pg.font.match_font('arial')

@@ -57,6 +57,8 @@ class Player(Sprite): #creates class Player
         self.coins = 0
         self.jumping = False
         self.cofric = -0.1
+        self.last_jump_time = 0
+        self.jump_cooldown = 1000  # Cooldown in milliseconds
         print('player instantiated')
         print(self.pos)
 
@@ -106,15 +108,28 @@ class Player(Sprite): #creates class Player
                            self.spritesheet.get_image(TILESIZE, 0, TILESIZE, TILESIZE)]
 
     def jump(self):
+        now = pg.time.get_ticks()
+
+        # Prevent another jump within 120 milliseconds
+        if now - self.last_jump_time < self.jump_cooldown:
+            return
+
+        
         # jump only if standing on a platform
         self.rect.y += 2
         hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         self.rect.y -= 2
         if hits and not self.jumping:
-            self.game.jump_sound.play()
+            # self.game.jump_sound.play()
             self.jumping = True
             self.vel.y = -PLAYER_JUMP
-    
+        self.vel.y = -PLAYER_JUMP
+        self.jumping = True
+
+        # Record the time of this jump
+        self.last_jump_time = now
+
+
     def is_jumping(self):
         if self.vel.y > 0:
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
