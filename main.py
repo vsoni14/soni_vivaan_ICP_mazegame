@@ -14,14 +14,19 @@ Process: cursor position, position of player, score, enemy position, velocity, a
  
 Output: graphics - things are drawn, sound - jump, power up, wakling, haptics
 
-GOALS: Win the race 
+Name: Shadow Runner
 
-RULES: Cannot go out of the track 
+Goals: Reach the end portal of each level before your light source runs out, collecting light orbs to restore your timer.
 
-FEEDBACK: 
+Rules: You can only jump while touching a solid surface; standing in total darkness slowly drains your light meter; you must collect at least 3 light orbs to unlock the exit portal.
 
-FREEDOM: Push opponents outside the racetrack to eliminate them. 
-Pickup differnt powerups aiding your ability to stun or eliminate opponents
+Feedback: Player glows brighter when collecting orbs; screen edges vignette red when light is critically low; light orbs play a high-pitched chime and shrink when collected.
+
+Freedom: You can dash horizontally in mid-air, double-jump, and wall-slide. You cannot attack enemies directly or move backward once a section's screen-lock triggers.
+
+Mechanics: 2D platforming physics (gravity, acceleration), ray-based light radius around the player, moving hazards with simple back-and-forth patrol paths, collision detection with tilemaps.
+
+additional features ray tracing / casting, Wall sliding.
 '''
  
 import pygame as pg #importing as pg to make typing pygame easier
