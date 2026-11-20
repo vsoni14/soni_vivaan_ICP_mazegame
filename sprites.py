@@ -157,15 +157,27 @@ class Wall(Sprite):
         self.groups = game.all_sprites, game.all_walls
         Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(GREEN)
-        self.rect = self.image.get_rect()
+        self.spritesheet = Spritesheet(path.join(self.game.img_dir, "sprite_sheet.png")) # finds the spritesheet
+        self.image = self.spritesheet.get_image(0,0, TILESIZE, TILESIZE)
+        self.image.set_colorkey(BLACK) # the background black
+        self.load_images() # loading images
+        self.image = self.wall_image.copy()
+        self.rect = self.image.get_rect() #draws rectangle for character
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.rect.x = self.x
         self.rect.y = self.y
 
+    def load_images(self):
+        # Load the one wall image from the spritesheet
+        self.wall_image = self.spritesheet.get_image(
+            TILESIZE * 6, 0, TILESIZE, TILESIZE
+        )
+        self.wall_image.set_colorkey(BLACK)
+
+
+        
 class Coin(Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.all_coins
